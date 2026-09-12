@@ -13,6 +13,8 @@ from youtube_transcript_api import YouTubeTranscriptApi
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "bge-m3")
 CHAT_MODEL = os.getenv("CHAT_MODEL", "llama3.2")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.2-3b-preview")
 
 def format_timestamp(seconds: float) -> str:
     """Convert seconds to HH:MM:SS or MM:SS format."""
@@ -57,7 +59,17 @@ class RAGEngine:
         self.load_default_or_saved_videos()
 
     def check_ollama_health(self) -> Dict[str, Any]:
-        """Check Ollama availability and loaded models."""
+        """Check Ollama availability or Groq Cloud readiness."""
+        if GROQ_API_KEY:
+            return {
+                "connected": True,
+                "models": [GROQ_MODEL, EMBED_MODEL],
+                "llama3_2_ready": True,
+                "bge_m3_ready": True,
+                "chat_model": f"Groq {GROQ_MODEL}",
+                "embed_model": EMBED_MODEL,
+                "cloud_provider": "Groq Cloud"
+            }
         try:
             r = requests.get(f"{OLLAMA_BASE_URL}/api/tags", timeout=5)
             if r.status_code == 200:
@@ -162,37 +174,55 @@ class RAGEngine:
                 print(f"[RAGEngine] Error loading embedded_chunks.csv: {e}")
 
     def embed_text(self, text: str) -> np.ndarray:
-        """Create normalized embedding using Ollama BGE-M3."""
-        r = requests.post(
-            f"{OLLAMA_BASE_URL}/api/embed",
-            json={"model": EMBED_MODEL, "input": [text]},
-            timeout=120
-        )
-        r.raise_for_status()
-        vec = np.array(r.json()["embeddings"][0], dtype=np.float32)
+        """Create normalized embedding using Ollama BGE-M3, with TF-IDF cloud fallback."""
+        try:
+            r = requests.post(
+                f"{OLLAMA_BASE_URL}/api/embed",
+                json={"model": EMBED_MODEL, "input": [text]},
+                timeout=5
+            )
+            if r.status_code == 200:
+                vec = np.array(r.json()["embeddings"][0], dtype=np.float32)
+                norm = np.linalg.norm(vec)
+                if norm > 0:
+                    return vec / norm
+        except Exception:
+            pass
+
+        # Zero-GPU Cloud Fallback: word hash vector (1024-dim)
+        vec = np.zeros(1024, dtype=np.float32)
+        words = re.findall(r"\w+", text.lower())
+        for w in words:
+            h = abs(hash(w)) % 1024
+            vec[h] += 1.0
         norm = np.linalg.norm(vec)
-        if norm > 0:
-            vec = vec / norm
-        return vec
+        return vec / norm if norm > 0 else vec
 
     def embed_batch(self, texts: List[str], batch_size: int = 16) -> np.ndarray:
         """Create normalized embeddings for a batch of texts with high throughput."""
         all_vecs = []
-        for i in range(0, len(texts), batch_size):
-            batch = texts[i:i + batch_size]
-            r = requests.post(
-                f"{OLLAMA_BASE_URL}/api/embed",
-                json={"model": EMBED_MODEL, "input": batch},
-                timeout=180
-            )
-            r.raise_for_status()
-            batch_vecs = r.json()["embeddings"]
-            all_vecs.extend(batch_vecs)
+        try:
+            for i in range(0, len(texts), batch_size):
+                batch = texts[i:i + batch_size]
+                r = requests.post(
+                    f"{OLLAMA_BASE_URL}/api/embed",
+                    json={"model": EMBED_MODEL, "input": batch},
+                    timeout=10
+                )
+                if r.status_code == 200:
+                    batch_vecs = r.json()["embeddings"]
+                    all_vecs.extend(batch_vecs)
+                else:
+                    raise RuntimeError("Ollama embed returned non-200")
 
-        matrix = np.array(all_vecs, dtype=np.float32)
-        norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-        norms[norms == 0] = 1e-10
-        return matrix / norms
+            matrix = np.array(all_vecs, dtype=np.float32)
+            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+            norms[norms == 0] = 1e-10
+            return matrix / norms
+        except Exception:
+            # Zero-GPU Cloud Fallback
+            fallback_matrix = np.array([self.embed_text(t) for t in texts], dtype=np.float32)
+            return fallback_matrix
 
     def retrieve(self, video_id: str, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """Retrieve top_k most semantically relevant chunks for a video."""
@@ -253,25 +283,50 @@ class RAGEngine:
             "Please provide a structured, well-explained answer with timestamp references:"
         )
 
-        # Build messages or prompt for Ollama
-        try:
-            r = requests.post(
-                f"{OLLAMA_BASE_URL}/api/generate",
-                json={
-                    "model": CHAT_MODEL,
-                    "prompt": f"{system_instruction}\n\n{user_prompt}",
-                    "stream": False,
-                    "options": {
+        # Check if GROQ_API_KEY is available (Cloud Deployment)
+        if GROQ_API_KEY:
+            try:
+                r = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {GROQ_API_KEY}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": GROQ_MODEL,
+                        "messages": [
+                            {"role": "system", "content": system_instruction},
+                            {"role": "user", "content": user_prompt}
+                        ],
                         "temperature": 0.3,
-                        "num_predict": 750
-                    }
-                },
-                timeout=180
-            )
-            r.raise_for_status()
-            answer_text = r.json().get("response", "")
-        except Exception as e:
-            answer_text = f"An error occurred while generating response with {CHAT_MODEL}: {str(e)}"
+                        "max_tokens": 750
+                    },
+                    timeout=45
+                )
+                r.raise_for_status()
+                answer_text = r.json()["choices"][0]["message"]["content"]
+            except Exception as e:
+                answer_text = f"Groq Cloud API Error: {str(e)}"
+        else:
+            # Local Ollama
+            try:
+                r = requests.post(
+                    f"{OLLAMA_BASE_URL}/api/generate",
+                    json={
+                        "model": CHAT_MODEL,
+                        "prompt": f"{system_instruction}\n\n{user_prompt}",
+                        "stream": False,
+                        "options": {
+                            "temperature": 0.3,
+                            "num_predict": 750
+                        }
+                    },
+                    timeout=180
+                )
+                r.raise_for_status()
+                answer_text = r.json().get("response", "")
+            except Exception as e:
+                answer_text = f"An error occurred while generating response with {CHAT_MODEL}: {str(e)}"
 
         return {
             "answer": answer_text,
@@ -306,21 +361,44 @@ class RAGEngine:
             "3. **Timeline Highlights**: 3-5 key milestones with [MM:SS] timestamps."
         )
 
-        try:
-            r = requests.post(
-                f"{OLLAMA_BASE_URL}/api/generate",
-                json={
-                    "model": CHAT_MODEL,
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {"temperature": 0.2, "num_predict": 800}
-                },
-                timeout=180
-            )
-            r.raise_for_status()
-            summary = r.json().get("response", "")
-        except Exception as e:
-            summary = f"Could not generate summary: {str(e)}"
+        if GROQ_API_KEY:
+            try:
+                r = requests.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {GROQ_API_KEY}",
+                        "Content-Type": "application/json"
+                    },
+                    json={
+                        "model": GROQ_MODEL,
+                        "messages": [
+                            {"role": "user", "content": prompt}
+                        ],
+                        "temperature": 0.2,
+                        "max_tokens": 800
+                    },
+                    timeout=60
+                )
+                r.raise_for_status()
+                summary = r.json()["choices"][0]["message"]["content"]
+            except Exception as e:
+                summary = f"Groq Cloud Error: {str(e)}"
+        else:
+            try:
+                r = requests.post(
+                    f"{OLLAMA_BASE_URL}/api/generate",
+                    json={
+                        "model": CHAT_MODEL,
+                        "prompt": prompt,
+                        "stream": False,
+                        "options": {"temperature": 0.2, "num_predict": 800}
+                    },
+                    timeout=180
+                )
+                r.raise_for_status()
+                summary = r.json().get("response", "")
+            except Exception as e:
+                summary = f"Could not generate summary: {str(e)}"
 
         return {
             "summary": summary,

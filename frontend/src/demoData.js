@@ -3,17 +3,17 @@
 
 export const DEMO_VIDEOS = [
   {
-    video_id: "_bM7HK530PE",
-    title: "C++ Programming Full Course (Demo)",
+    video_id: "vLnPwxZdW4Y",
+    title: "C++ Tutorial for Beginners - Full Course",
     chunks_count: 2126,
-    url: "https://www.youtube.com/watch?v=_bM7HK530PE",
+    url: "https://www.youtube.com/watch?v=vLnPwxZdW4Y",
   }
 ];
 
 export const DEMO_CHUNKS = [
   {
     chunk_id: 1,
-    title: "C++ Programming Full Course (Demo)",
+    title: "C++ Tutorial for Beginners - Full Course",
     start: 2.32,
     end: 6.68,
     start_formatted: "00:02",
@@ -22,7 +22,7 @@ export const DEMO_CHUNKS = [
   },
   {
     chunk_id: 2,
-    title: "C++ Programming Full Course (Demo)",
+    title: "C++ Tutorial for Beginners - Full Course",
     start: 10.32,
     end: 18.45,
     start_formatted: "00:10",
@@ -31,7 +31,7 @@ export const DEMO_CHUNKS = [
   },
   {
     chunk_id: 3,
-    title: "C++ Programming Full Course (Demo)",
+    title: "C++ Tutorial for Beginners - Full Course",
     start: 25.10,
     end: 38.60,
     start_formatted: "00:25",
@@ -40,7 +40,7 @@ export const DEMO_CHUNKS = [
   },
   {
     chunk_id: 4,
-    title: "C++ Programming Full Course (Demo)",
+    title: "C++ Tutorial for Beginners - Full Course",
     start: 45.20,
     end: 59.80,
     start_formatted: "00:45",
@@ -49,7 +49,7 @@ export const DEMO_CHUNKS = [
   },
   {
     chunk_id: 5,
-    title: "C++ Programming Full Course (Demo)",
+    title: "C++ Tutorial for Beginners - Full Course",
     start: 72.00,
     end: 95.30,
     start_formatted: "01:12",
@@ -58,7 +58,7 @@ export const DEMO_CHUNKS = [
   },
   {
     chunk_id: 6,
-    title: "C++ Programming Full Course (Demo)",
+    title: "C++ Tutorial for Beginners - Full Course",
     start: 120.00,
     end: 145.00,
     start_formatted: "02:00",
@@ -69,7 +69,7 @@ export const DEMO_CHUNKS = [
 
 export const DEMO_PRESET_ANSWERS = {
   default: {
-    answer: `**C++ Full Course Overview**\n\n* **Language Performance**: C++ is a high-performance, compiled programming language [00:10] used widely in game engines, operating systems, embedded systems, and financial trading.\n* **Compilation Pipeline**: Unlike interpreted languages, C++ source code is directly compiled into machine code [00:25] that the CPU executes natively.\n* **Memory Management & Pointers**: Direct memory management is a hallmark of C++, utilizing pointers and references [01:12] to store and manipulate memory addresses.\n* **Object-Oriented Programming**: The course teaches classes, encapsulation, inheritance, and polymorphism [02:00] for scalable software design.`,
+    answer: `**Course Overview & Key Insights**\n\n* **Language Performance**: C++ is a high-performance, compiled programming language [00:10] used widely in game engines, operating systems, embedded systems, and financial trading.\n* **Compilation Pipeline**: Unlike interpreted languages, C++ source code is directly compiled into machine code [00:25] that the CPU executes natively.\n* **Memory Management & Pointers**: Direct memory management is a hallmark of C++, utilizing pointers and references [01:12] to store and manipulate memory addresses.\n* **Object-Oriented Programming**: The course teaches classes, encapsulation, inheritance, and polymorphism [02:00] for scalable software design.`,
     sources: [
       {
         start: 10.32,
@@ -97,5 +97,5 @@ export const DEMO_PRESET_ANSWERS = {
       }
     ]
   },
-  summary: `**Executive Summary**\n\nThis video provides a complete masterclass on modern C++ programming from the absolute ground up. It guides developers through syntax, compilation mechanics, memory management, and modern object-oriented principles.\n\n**Key Takeaways**:\n* **High Performance**: Direct compilation to machine code provides maximum runtime speed [00:25].\n* **Type Safety & Variables**: Strong static typing with primitives like int, double, and char [00:45].\n* **Pointers & Memory**: Direct hardware access and memory manipulation using pointers and references [01:12].\n* **Object-Oriented Design**: Encapsulation, inheritance, and polymorphism [02:00].`
+  summary: `**Executive Summary**\n\nThis video provides a complete masterclass on programming from the absolute ground up. It guides developers through syntax, compilation mechanics, memory management, and modern object-oriented principles.\n\n**Key Takeaways**:\n* **High Performance**: Direct compilation to machine code provides maximum runtime speed [00:25].\n* **Type Safety & Variables**: Strong static typing with primitives like int, double, and char [00:45].\n* **Pointers & Memory**: Direct hardware access and memory manipulation using pointers and references [01:12].\n* **Object-Oriented Design**: Encapsulation, inheritance, and polymorphism [02:00].`
 };

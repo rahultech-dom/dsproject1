@@ -1,7 +1,7 @@
 import React from "react";
-import { Sparkles, Cpu, Layers, Share2, Server, CheckCircle2, AlertCircle } from "lucide-react";
+import { Sparkles, Cpu, Layers, Share2, Server, Key, CheckCircle2, AlertCircle } from "lucide-react";
 
-export default function Navbar({ health, onOpenArch, onOpenLinkedIn }) {
+export default function Navbar({ health, onOpenArch, onOpenLinkedIn, onOpenKeyModal, hasGroqKey }) {
   const isOllamaOnline = health?.ollama?.connected;
   const hasLlama = health?.ollama?.llama3_2_ready;
   const hasEmbed = health?.ollama?.bge_m3_ready;
@@ -70,6 +70,20 @@ export default function Navbar({ health, onOpenArch, onOpenLinkedIn }) {
           </div>
 
           <div className="h-4 w-[1px] bg-sage-300 mx-1 hidden sm:block" />
+
+          {/* Cloud Key Modal Trigger */}
+          <button
+            onClick={onOpenKeyModal}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition cursor-pointer ${
+              hasGroqKey
+                ? "bg-forest-100 text-forest-900 border-forest-400"
+                : "bg-cream-200/80 hover:bg-cream-300 text-forest-900 border-cream-400/60"
+            }`}
+            title="Configure free Groq LLaMA 3.2 Cloud Key"
+          >
+            <Key className="w-3.5 h-3.5 text-forest-700" />
+            <span>{hasGroqKey ? "Cloud LLaMA Live" : "Free Cloud Key"}</span>
+          </button>
 
           {/* Architecture Modal Trigger */}
           <button

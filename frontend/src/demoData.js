@@ -59,43 +59,55 @@ export const DEMO_CHUNKS = [
   {
     chunk_id: 6,
     title: "C++ Tutorial for Beginners - Full Course",
-    start: 120.00,
-    end: 145.00,
-    start_formatted: "02:00",
-    end_formatted: "02:25",
-    text: "Object-oriented programming in C++ revolves around classes, objects, encapsulation, inheritance, and polymorphism."
+    start: 105.00,
+    end: 125.00,
+    start_formatted: "01:45",
+    end_formatted: "02:05",
+    text: "When you dereference a pointer with the asterisk operator, you read or modify the actual value located at that specific memory address on the heap or stack."
+  },
+  {
+    chunk_id: 7,
+    title: "C++ Tutorial for Beginners - Full Course",
+    start: 130.00,
+    end: 155.00,
+    start_formatted: "02:10",
+    end_formatted: "02:35",
+    text: "Functions in C++ allow modular code reuse. Parameters can be passed by value, which creates a copy, or passed by reference using pointers or ampersand (&) to avoid expensive copies."
+  },
+  {
+    chunk_id: 8,
+    title: "C++ Tutorial for Beginners - Full Course",
+    start: 160.00,
+    end: 185.00,
+    start_formatted: "02:40",
+    end_formatted: "03:05",
+    text: "Arrays and strings in C++ are collections of contiguous memory. An array name actually acts as a constant pointer pointing to the memory address of the first element."
+  },
+  {
+    chunk_id: 9,
+    title: "C++ Tutorial for Beginners - Full Course",
+    start: 190.00,
+    end: 220.00,
+    start_formatted: "03:10",
+    end_formatted: "03:40",
+    text: "Control flow in C++ includes if-else conditional branches, switch statements, while loops, and for loops for iterating through collections and data streams."
+  },
+  {
+    chunk_id: 10,
+    title: "C++ Tutorial for Beginners - Full Course",
+    start: 230.00,
+    end: 265.00,
+    start_formatted: "03:50",
+    end_formatted: "04:25",
+    text: "Object-oriented programming in C++ revolves around classes, objects, encapsulation, inheritance, and polymorphism. Classes define blueprints with public and private member variables."
+  },
+  {
+    chunk_id: 11,
+    title: "C++ Tutorial for Beginners - Full Course",
+    start: 275.00,
+    end: 310.00,
+    start_formatted: "04:35",
+    end_formatted: "05:10",
+    text: "Constructors initialize objects when instantiated, while destructors clean up dynamically allocated resources to prevent memory leaks in C++."
   }
 ];
-
-export const DEMO_PRESET_ANSWERS = {
-  default: {
-    answer: `**Course Overview & Key Insights**\n\n* **Language Performance**: C++ is a high-performance, compiled programming language [00:10] used widely in game engines, operating systems, embedded systems, and financial trading.\n* **Compilation Pipeline**: Unlike interpreted languages, C++ source code is directly compiled into machine code [00:25] that the CPU executes natively.\n* **Memory Management & Pointers**: Direct memory management is a hallmark of C++, utilizing pointers and references [01:12] to store and manipulate memory addresses.\n* **Object-Oriented Programming**: The course teaches classes, encapsulation, inheritance, and polymorphism [02:00] for scalable software design.`,
-    sources: [
-      {
-        start: 10.32,
-        end: 18.45,
-        start_formatted: "00:10",
-        end_formatted: "00:18",
-        match_percent: 94.2,
-        text: "C++ is one of the most popular, fast, and high-performance programming languages in the world, powering game engines, operating systems, and finance."
-      },
-      {
-        start: 25.10,
-        end: 38.60,
-        start_formatted: "00:25",
-        end_formatted: "00:38",
-        match_percent: 91.0,
-        text: "Before writing code, we need to understand how C++ programs are compiled. Source code gets converted by the compiler into machine code that the CPU executes directly."
-      },
-      {
-        start: 72.00,
-        end: 95.30,
-        start_formatted: "01:12",
-        end_formatted: "01:35",
-        match_percent: 88.6,
-        text: "Pointers and references allow direct memory manipulation in C++. A pointer stores the memory address of another variable using the address-of operator (&)."
-      }
-    ]
-  },
-  summary: `**Executive Summary**\n\nThis video provides a complete masterclass on programming from the absolute ground up. It guides developers through syntax, compilation mechanics, memory management, and modern object-oriented principles.\n\n**Key Takeaways**:\n* **High Performance**: Direct compilation to machine code provides maximum runtime speed [00:25].\n* **Type Safety & Variables**: Strong static typing with primitives like int, double, and char [00:45].\n* **Pointers & Memory**: Direct hardware access and memory manipulation using pointers and references [01:12].\n* **Object-Oriented Design**: Encapsulation, inheritance, and polymorphism [02:00].`
-};

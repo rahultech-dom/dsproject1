@@ -7,13 +7,15 @@ import SummaryTab from "./components/SummaryTab";
 import ChunksTab from "./components/ChunksTab";
 import ArchitectureModal from "./components/ArchitectureModal";
 import LinkedInModal from "./components/LinkedInModal";
+import ApiKeyModal from "./components/ApiKeyModal";
 import {
   fetchHealth,
   fetchVideos,
   fetchVideoChunks,
   sendChatMessage,
   fetchSummary,
-  processNewVideo
+  processNewVideo,
+  getGroqApiKey
 } from "./api";
 import { MessageSquare, FileText, Layers, Video } from "lucide-react";
 
@@ -44,6 +46,8 @@ export default function App() {
   // Modals
   const [isArchOpen, setIsArchOpen] = useState(false);
   const [isLinkedInOpen, setIsLinkedInOpen] = useState(false);
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+  const [hasGroqKey, setHasGroqKey] = useState(Boolean(getGroqApiKey()));
 
   // Initialize data
   useEffect(() => {
@@ -197,6 +201,8 @@ export default function App() {
         health={health}
         onOpenArch={() => setIsArchOpen(true)}
         onOpenLinkedIn={() => setIsLinkedInOpen(true)}
+        onOpenKeyModal={() => setIsKeyModalOpen(true)}
+        hasGroqKey={hasGroqKey}
       />
 
       {/* Main Container */}
@@ -347,6 +353,11 @@ export default function App() {
       {/* Modals */}
       <ArchitectureModal isOpen={isArchOpen} onClose={() => setIsArchOpen(false)} />
       <LinkedInModal isOpen={isLinkedInOpen} onClose={() => setIsLinkedInOpen(false)} />
+      <ApiKeyModal
+        isOpen={isKeyModalOpen}
+        onClose={() => setIsKeyModalOpen(false)}
+        onKeySaved={() => setHasGroqKey(Boolean(getGroqApiKey()))}
+      />
     </div>
   );
 }

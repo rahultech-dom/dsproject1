@@ -77,11 +77,11 @@ export const DEMO_CHUNKS = [
   {
     chunk_id: 8,
     title: "C++ Tutorial for Beginners - Full Course",
-    start: 160.00,
+    start: 155.00,
     end: 185.00,
-    start_formatted: "02:40",
+    start_formatted: "02:35",
     end_formatted: "03:05",
-    text: "Arrays and strings in C++ are collections of contiguous memory. An array name actually acts as a constant pointer pointing to the memory address of the first element."
+    text: "Operators in C++ perform operations on variables and values. Common types include arithmetic operators (+, -, *, /, %), relational comparison operators (==, !=, <, >), logical operators (&&, ||, !), and bitwise operators."
   },
   {
     chunk_id: 9,

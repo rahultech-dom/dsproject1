@@ -46,7 +46,14 @@ export function extractVideoId(url) {
 // Client-side semantic keyword & relevance retrieval
 export function retrieveChunks(chunks, query, topK = 4) {
   if (!chunks || chunks.length === 0) return [];
-  const queryTerms = (query.toLowerCase().match(/\w+/g) || []).filter((w) => w.length > 2);
+  const rawTerms = (query.toLowerCase().match(/\w+/g) || []).filter((w) => w.length > 2);
+  const queryTerms = [];
+  for (const t of rawTerms) {
+    queryTerms.push(t);
+    if (t.endsWith("s") && t.length > 3) queryTerms.push(t.slice(0, -1));
+    if (t.endsWith("es") && t.length > 4) queryTerms.push(t.slice(0, -2));
+    if (t.endsWith("ing") && t.length > 5) queryTerms.push(t.slice(0, -3));
+  }
 
   const scored = chunks.map((chunk) => {
     const textLower = chunk.text.toLowerCase();
@@ -54,10 +61,9 @@ export function retrieveChunks(chunks, query, topK = 4) {
 
     for (const term of queryTerms) {
       if (textLower.includes(term)) {
-        // Boost for exact word boundaries
         const regex = new RegExp(`\\b${term}`, "gi");
         const matches = textLower.match(regex);
-        score += matches ? matches.length * 3 : 1;
+        score += matches ? matches.length * 5 : 2;
       }
     }
     return { ...chunk, score };
@@ -69,7 +75,7 @@ export function retrieveChunks(chunks, query, topK = 4) {
 
   return top.map((c) => {
     const hasMatch = c.score > 0;
-    const matchPct = hasMatch ? Math.min(97, 82 + c.score * 4) : 75;
+    const matchPct = hasMatch ? Math.min(98, 84 + c.score * 3) : 72;
     return {
       ...c,
       jump_seconds: Math.floor(c.start),
